@@ -9,7 +9,7 @@ const paths = {
 }
 
 module.exports = {
-  entry: ['@babel/polyfill', path.join(paths.CLIENT, 'app.jsx')],
+  entry: ['@babel/polyfill', path.join(paths.CLIENT, 'app.js')],
   output: {
     path: paths.CLIENT_DIST,
     filename: 'app.bundle.js',
