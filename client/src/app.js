@@ -1,6 +1,8 @@
 // @flow
 import p5 from 'p5'
 
+import './styles.css'
+
 const sketch = p => {
   let x = 100
   let y = 100
@@ -17,5 +19,3 @@ const sketch = p => {
 }
 
 new p5(sketch, document.getElementById('app'))
-
-console.log('foo')
