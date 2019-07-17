@@ -1,20 +1,29 @@
-// @flow
 import p5 from 'p5'
+import 'p5/lib/addons/p5.dom'
 
 import './styles.css'
 
 const sketch = p => {
-  let x = 100
-  let y = 100
+  let img = null
+
+  function handleFileUpload(file) {
+    if (file.type === 'image') {
+      img = p.loadImage(file.data)
+    } else {
+      img = null
+    }
+  }
 
   p.setup = function() {
+    p.createFileInput(handleFileUpload)
     p.createCanvas(700, 410)
   }
 
   p.draw = function() {
-    p.background(0)
-    p.fill(255)
-    p.rect(x, y, 50, 50)
+    p.background(255)
+    if (img) {
+      p.image(img, 100, 100)
+    }
   }
 }
 
