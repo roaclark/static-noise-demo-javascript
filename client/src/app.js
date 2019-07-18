@@ -2,7 +2,7 @@
 import p5 from 'p5'
 import 'p5/lib/addons/p5.dom'
 
-import { createForm, DEFAULT_FORM_VALUES, type FormInputType } from './form'
+import { createForm, DEFAULT_FORM_VALUES, FORM_FIELDS } from './form'
 import { updateNoise, updateOffset, type PointType } from './points'
 import './styles.css'
 
@@ -12,7 +12,11 @@ const HEIGHT = 400
 const UPDATE_RATE_IN_MILLISECONDS = 30
 
 class ParticleManager {
-  formData: FormInputType
+  noiseSize: number
+  noiseDensity: number
+  noiseSpeed: number
+  noiseJitter: number
+  running: boolean
   noiseParticles: PointType[]
   offset: PointType
   target: PointType
@@ -21,39 +25,57 @@ class ParticleManager {
     this.offset = { x: 0, y: 0 }
     this.target = { x: 0, y: 0 }
 
+    const {
+      noiseSize,
+      noiseDensity,
+      noiseSpeed,
+      noiseJitter,
+      running,
+    } = DEFAULT_FORM_VALUES
+    this.noiseSize = noiseSize
+    this.noiseDensity = noiseDensity
+    this.noiseSpeed = noiseSpeed
+    this.noiseJitter = noiseJitter
+    this.running = running
+
     const frameSize = WIDTH * HEIGHT
-    this.formData = DEFAULT_FORM_VALUES
 
     this.noiseParticles = updateNoise(
       [],
-      this.formData.noiseDensity,
-      this.formData.noiseSize,
+      this.noiseDensity,
+      this.noiseSize,
       frameSize,
     )
   }
 
-  formUpdateCalback(newData) {
-    this.formData = Object.assign(this.formData, newData)
-    if (newData.noiseDensity || newData.noiseSize) {
+  formUpdateCalback(field: string, value: *) {
+    this.noiseSize = field === FORM_FIELDS.NOISE_SIZE ? value : this.noiseSize
+    this.noiseDensity =
+      field === FORM_FIELDS.NOISE_DENSITY ? value : this.noiseDensity
+    this.noiseSpeed =
+      field === FORM_FIELDS.NOISE_SPEED ? value : this.noiseSpeed
+    this.noiseJitter =
+      field === FORM_FIELDS.NOISE_JITTER ? value : this.noiseJitter
+    this.running = field === FORM_FIELDS.RUNNING ? value : this.running
+
+    if (field === FORM_FIELDS.NOISE_DENSITY || FORM_FIELDS.NOISE_SIZE) {
       const frameSize = WIDTH * HEIGHT
       this.noiseParticles = updateNoise(
         this.noiseParticles,
-        this.formData.noiseDensity,
-        this.formData.noiseSize,
+        this.noiseDensity,
+        this.noiseSize,
         frameSize,
       )
     }
   }
 
   updateOffsetInterval() {
-    const { noiseSpeed, noiseJitter, running } = this.formData
-
-    if (running) {
+    if (this.running) {
       const { offset, target } = updateOffset(
         this.offset,
         this.target,
-        noiseSpeed,
-        noiseJitter,
+        this.noiseSpeed,
+        this.noiseJitter,
       )
 
       this.offset = offset
@@ -63,6 +85,9 @@ class ParticleManager {
 }
 
 const sketch = p => {
+  let backgroundImage = null
+  let backgroundText = null
+
   const particleManager = new ParticleManager()
   setInterval(
     () => particleManager.updateOffsetInterval(),
@@ -70,8 +95,6 @@ const sketch = p => {
   )
 
   function renderBackgroundImage() {
-    const { backgroundImage } = particleManager.formData
-
     if (!backgroundImage) {
       return
     }
@@ -93,8 +116,6 @@ const sketch = p => {
   }
 
   function renderBackgroundText() {
-    const { backgroundText } = particleManager.formData
-
     if (!backgroundText) {
       return
     }
@@ -105,11 +126,7 @@ const sketch = p => {
   }
 
   function renderNoise() {
-    const {
-      noiseParticles,
-      offset,
-      formData: { noiseSize },
-    } = particleManager
+    const { noiseParticles, offset, noiseSize } = particleManager
 
     p.fill(0)
     noiseParticles.forEach(point => {
@@ -120,7 +137,13 @@ const sketch = p => {
   }
 
   p.setup = function() {
-    createForm(p, newData => particleManager.formUpdateCalback(newData))
+    createForm(p, (field, value) => {
+      backgroundImage =
+        field === FORM_FIELDS.BACKGROUND_IMAGE ? value : backgroundImage
+      backgroundText =
+        field === FORM_FIELDS.BACKGROUND_IMAGE ? value : backgroundText
+      particleManager.formUpdateCalback(field, value)
+    })
     p.createCanvas(WIDTH, HEIGHT)
   }
 

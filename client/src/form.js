@@ -1,23 +1,13 @@
 //@flow
 
-export type PartialFormInputType = {
-  noiseDensity?: number,
-  noiseSize?: number,
-  noiseSpeed?: number,
-  noiseJitter?: number,
-  backgroundImage?: ?{ width: number, height: number },
-  backgroundText?: ?string,
-  running?: boolean,
-}
-
-export type FormInputType = {
-  noiseDensity: number,
-  noiseSize: number,
-  noiseSpeed: number,
-  noiseJitter: number,
-  backgroundImage?: ?{ width: number, height: number },
-  backgroundText?: ?string,
-  running: boolean,
+export const FORM_FIELDS = {
+  NOISE_DENSITY: 'noiseDensity',
+  NOISE_SIZE: 'noiseSize',
+  NOISE_SPEED: 'noiseSpeed',
+  NOISE_JITTER: 'noiseJitter',
+  BACKGROUND_IMAGE: 'backgroundImage',
+  BACKGROUND_TEXT: 'backgroundText',
+  RUNNING: 'running',
 }
 
 const DEFAULT_PERCENT = 25
@@ -29,7 +19,7 @@ const DEFAULT_SIZE = 3
 const START_TEXT = 'Start'
 const STOP_TEXT = 'Stop'
 
-export const DEFAULT_FORM_VALUES: FormInputType = {
+export const DEFAULT_FORM_VALUES = {
   noiseDensity: DEFAULT_PERCENT,
   noiseSize: DEFAULT_SIZE,
   noiseSpeed: DEFAULT_PERCENT,
@@ -39,13 +29,13 @@ export const DEFAULT_FORM_VALUES: FormInputType = {
   running: false,
 }
 
-export function createForm(p: *, callback: PartialFormInputType => mixed) {
+export function createForm(p: *, callback: (string, *) => mixed) {
   function handleFileUpload(file) {
     if (file.type === 'image') {
       const img = p.loadImage(file.data)
-      callback({ backgroundImage: img })
+      callback(FORM_FIELDS.BACKGROUND_IMAGE, img)
     } else {
-      callback({ backgroundImage: null })
+      callback(FORM_FIELDS.BACKGROUND_IMAGE, null)
     }
   }
 
@@ -55,7 +45,7 @@ export function createForm(p: *, callback: PartialFormInputType => mixed) {
     function updateValue(e) {
       const rawVal = e.target.value
       const newVal = isNumber ? parseInt(rawVal, 10) : rawVal
-      if (newVal !== sliderVal) callback({ [fieldName]: newVal })
+      if (newVal !== sliderVal) callback(fieldName, newVal)
       sliderVal = newVal
     }
 
@@ -107,21 +97,21 @@ export function createForm(p: *, callback: PartialFormInputType => mixed) {
     button.mousePressed(() => {
       running = !running
       button.html(running ? STOP_TEXT : START_TEXT)
-      callback({ running })
+      callback(FORM_FIELDS.RUNNING, running)
     })
   }
 
-  createSlider('noiseDensity', 'Noise Density')
+  createSlider(FORM_FIELDS.NOISE_DENSITY, 'Noise Density')
   p.createElement('br')
-  createSlider('noiseSpeed', 'Noise Speed')
+  createSlider(FORM_FIELDS.NOISE_SPEED, 'Noise Speed')
   p.createElement('br')
-  createSlider('noiseSize', 'Noise Size', MIN_SIZE, MAX_SIZE)
+  createSlider(FORM_FIELDS.NOISE_SIZE, 'Noise Size', MIN_SIZE, MAX_SIZE)
   p.createElement('br')
-  createSlider('noiseJitter', 'Noise Jitter')
+  createSlider(FORM_FIELDS.NOISE_JITTER, 'Noise Jitter')
   p.createElement('br')
-  createTextInput('backgroundText', 'Background text')
+  createTextInput(FORM_FIELDS.BACKGROUND_TEXT, 'Background text')
   p.createElement('br')
-  createFileInput('backgroundImg', 'Background image')
+  createFileInput(FORM_FIELDS.BACKGROUND_IMAGE, 'Background image')
   p.createElement('br')
   createStartButton()
   p.createElement('br')
