@@ -11,7 +11,7 @@ export type FormInputType = {
 }
 
 export const DEFAULT_PERCENT = 25
-const MIN_PERCENT = 0
+const MIN_PERCENT = 1
 const MAX_PERCENT = 100
 const START_TEXT = 'Start'
 const STOP_TEXT = 'Stop'
