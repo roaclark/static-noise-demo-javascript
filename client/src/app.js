@@ -70,7 +70,7 @@ const sketch = p => {
       backgroundImage =
         field === FORM_FIELDS.BACKGROUND_IMAGE ? value : backgroundImage
       backgroundText =
-        field === FORM_FIELDS.BACKGROUND_IMAGE ? value : backgroundText
+        field === FORM_FIELDS.BACKGROUND_TEXT ? value : backgroundText
       particleManager.formUpdateCalback(field, value)
       reloadNoiseImage()
     })
