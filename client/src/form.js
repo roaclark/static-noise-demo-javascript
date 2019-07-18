@@ -1,0 +1,102 @@
+//@flow
+
+export type FormInputType = {
+  noiseDensity?: number,
+  noiseSpeed?: number,
+  noiseSize?: number,
+  noiseJitter?: number,
+  backgroundImage?: ?string,
+  backgroundText?: ?string,
+  running?: boolean,
+}
+
+const MIN_PERCENT = 0
+const MAX_PERCENT = 100
+
+const DEFAULT_PERCENT = 25
+
+export function createForm(
+  p: *,
+  defaultValues: FormInputType,
+  callback: FormInputType => mixed,
+) {
+  function handleFileUpload(file) {
+    if (file.type === 'image') {
+      const img = p.loadImage(file.data)
+      callback({ backgroundImage: img })
+    } else {
+      callback({ backgroundImage: null })
+    }
+  }
+
+  function attachValueCallback(slider, fieldName) {
+    let sliderVal = slider.value
+
+    function updateValue(e) {
+      const newVal = e.target.value
+      if (newVal !== sliderVal) callback({ [fieldName]: newVal })
+      sliderVal = newVal
+    }
+
+    slider.elt.addEventListener('input', updateValue)
+    slider.elt.addEventListener('change', updateValue)
+  }
+
+  function withLabel(fieldName, label, createElement) {
+    const labelElement = p.createElement('label', label)
+    const inputElement = createElement()
+    inputElement.id(fieldName)
+    labelElement.attribute('for', fieldName)
+  }
+
+  function createSlider(fieldName: string, label: string) {
+    withLabel(fieldName, label, () => {
+      const slider = p.createSlider(
+        MIN_PERCENT,
+        MAX_PERCENT,
+        defaultValues[fieldName] || DEFAULT_PERCENT,
+      )
+      attachValueCallback(slider, fieldName)
+      return slider
+    })
+  }
+
+  function createTextInput(fieldName: string, label: string) {
+    withLabel(fieldName, label, () => {
+      const input = p.createInput('')
+      attachValueCallback(input, fieldName)
+      return input
+    })
+  }
+
+  function createFileInput(fieldName: string, label: string) {
+    withLabel(fieldName, label, () => {
+      return p.createFileInput(handleFileUpload)
+    })
+  }
+
+  function createStartButton() {
+    let running = defaultValues.running || false
+    const button = p.createButton(running ? 'Stop' : 'Start')
+    button.mousePressed(() => {
+      running = !running
+      button.html(running ? 'Stop' : 'Start')
+      callback({ running })
+    })
+  }
+
+  createSlider('noiseDensity', 'Noise Density')
+  p.createElement('br')
+  createSlider('noiseSpeed', 'Noise Speed')
+  p.createElement('br')
+  createSlider('noiseSize', 'Noise Size')
+  p.createElement('br')
+  createSlider('noiseJitter', 'Noise Jitter')
+  p.createElement('br')
+  createTextInput('backgroundText', 'Background text')
+  p.createElement('br')
+  createFileInput('backgroundImg', 'Background image')
+  p.createElement('br')
+  createStartButton()
+  p.createElement('br')
+}

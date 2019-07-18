@@ -1,28 +1,25 @@
+//@flow
 import p5 from 'p5'
 import 'p5/lib/addons/p5.dom'
 
+import { createForm, type FormInputType } from './form'
 import './styles.css'
 
 const sketch = p => {
-  let img = null
-
-  function handleFileUpload(file) {
-    if (file.type === 'image') {
-      img = p.loadImage(file.data)
-    } else {
-      img = null
-    }
-  }
+  let formData: FormInputType = {}
 
   p.setup = function() {
-    p.createFileInput(handleFileUpload)
+    createForm(p, {}, newData => {
+      return Object.assign(formData, newData)
+    })
     p.createCanvas(700, 410)
   }
 
   p.draw = function() {
     p.background(255)
-    if (img) {
-      p.image(img, 100, 100)
+    const { backgroundImage } = formData
+    if (backgroundImage) {
+      p.image(backgroundImage, 0, 0)
     }
   }
 }
