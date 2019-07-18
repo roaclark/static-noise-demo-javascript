@@ -82,8 +82,8 @@ export default class ParticleManager {
   createNoiseImage() {
     const canvas = document.createElement('canvas')
 
-    canvas.width = this.width
-    canvas.height = this.height
+    canvas.width = this.width * 3
+    canvas.height = this.height * 3
 
     const ctx = canvas.getContext('2d')
 
@@ -92,9 +92,19 @@ export default class ParticleManager {
       const x = particle.x * this.width
       const y = particle.y * this.height
 
-      ctx.beginPath()
-      ctx.arc(x, y, this.noiseSize / 2, 0, 2 * Math.PI)
-      ctx.fill()
+      ;[0, 1, 2].forEach(i => {
+        ;[0, 1, 2].forEach(j => {
+          ctx.beginPath()
+          ctx.arc(
+            x + i * this.width,
+            y + j * this.height,
+            this.noiseSize / 2,
+            0,
+            2 * Math.PI,
+          )
+          ctx.fill()
+        })
+      })
     })
 
     this.noiseImage = canvas.toDataURL()

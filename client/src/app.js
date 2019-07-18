@@ -45,7 +45,7 @@ const sketch = p => {
 
   function renderNoise() {
     const { offset } = particleManager
-    noiseImage && p.image(noiseImage, offset.x, offset.y)
+    noiseImage && p.image(noiseImage, offset.x - WIDTH, offset.y - HEIGHT)
   }
 
   function reloadNoiseImage() {
