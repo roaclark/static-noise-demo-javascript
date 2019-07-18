@@ -5,7 +5,7 @@ export type FormInputType = {
   noiseSize?: number,
   noiseSpeed?: number,
   noiseJitter?: number,
-  backgroundImage?: ?string,
+  backgroundImage?: ?{ width: number, height: number },
   backgroundText?: ?string,
   running?: boolean,
 }
