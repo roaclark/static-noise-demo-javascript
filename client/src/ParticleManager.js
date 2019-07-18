@@ -1,6 +1,9 @@
 //@flow
 import { DEFAULT_FORM_VALUES, FORM_FIELDS } from './form'
-import { updateNoise, updateOffset, type PointType } from './points'
+
+type PointType = { x: number, y: number }
+
+const DENSITY_FACTOR = 0.004
 
 export default class ParticleManager {
   width: number
@@ -55,26 +58,28 @@ export default class ParticleManager {
 
   updateOffsetInterval() {
     if (this.running) {
-      const { offset, target } = updateOffset(
-        this.offset,
-        this.target,
-        this.noiseSpeed,
-        this.noiseJitter,
-      )
-
-      this.offset = offset
-      this.target = target
+      this.offset = {
+        x: this.offset.x + Math.random() * 10 - 5,
+        y: this.offset.y + Math.random() * 10 - 5,
+      }
     }
   }
 
   updateNoise() {
     const frameSize = this.width * this.height
-    this.noiseParticles = updateNoise(
-      this.noiseParticles || [],
-      this.noiseDensity,
-      this.noiseSize,
-      frameSize,
-    )
+    const noiseParticles = this.noiseParticles || []
+
+    const noiseFactor = DENSITY_FACTOR * frameSize
+    const targetPointCount = (noiseFactor * this.noiseDensity) / this.noiseSize
+
+    const newNoise = noiseParticles.slice(0, targetPointCount)
+    while (newNoise.length < targetPointCount) {
+      newNoise.push({
+        x: Math.random(),
+        y: Math.random(),
+      })
+    }
+    this.noiseParticles = newNoise
 
     this.createNoiseImage()
   }
