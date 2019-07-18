@@ -58,9 +58,17 @@ export default class ParticleManager {
 
   updateOffsetInterval() {
     if (this.running) {
-      this.offset = {
-        x: this.offset.x + Math.random() * 10 - 5,
-        y: this.offset.y + Math.random() * 10 - 5,
+      const xDiff = this.target.x - this.offset.x
+      const yDiff = this.target.y - this.offset.y
+
+      if (xDiff || yDiff) {
+        const distanceRatio = Math.sqrt(
+          this.noiseSpeed ** 2 / (xDiff ** 2 + yDiff ** 2),
+        )
+        this.offset = {
+          x: this.offset.x + distanceRatio * xDiff,
+          y: this.offset.y + distanceRatio * yDiff,
+        }
       }
     }
   }
