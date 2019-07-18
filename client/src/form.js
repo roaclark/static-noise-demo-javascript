@@ -2,8 +2,8 @@
 
 export type FormInputType = {
   noiseDensity?: number,
-  noiseSpeed?: number,
   noiseSize?: number,
+  noiseSpeed?: number,
   noiseJitter?: number,
   backgroundImage?: ?string,
   backgroundText?: ?string,
