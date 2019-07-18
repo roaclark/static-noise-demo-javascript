@@ -1,6 +1,6 @@
 //@flow
 
-export type FormInputType = {
+export type PartialFormInputType = {
   noiseDensity?: number,
   noiseSize?: number,
   noiseSpeed?: number,
@@ -10,17 +10,36 @@ export type FormInputType = {
   running?: boolean,
 }
 
-export const DEFAULT_PERCENT = 25
+export type FormInputType = {
+  noiseDensity: number,
+  noiseSize: number,
+  noiseSpeed: number,
+  noiseJitter: number,
+  backgroundImage?: ?{ width: number, height: number },
+  backgroundText?: ?string,
+  running: boolean,
+}
+
+const DEFAULT_PERCENT = 25
 const MIN_PERCENT = 1
 const MAX_PERCENT = 100
 const START_TEXT = 'Start'
 const STOP_TEXT = 'Stop'
 
+const DEFAULT_VALUES: FormInputType = {
+  noiseDensity: DEFAULT_PERCENT,
+  noiseSize: DEFAULT_PERCENT,
+  noiseSpeed: DEFAULT_PERCENT,
+  noiseJitter: DEFAULT_PERCENT,
+  backgroundImage: null,
+  backgroundText: null,
+  running: false,
+}
+
 export function createForm(
   p: *,
-  defaultValues: FormInputType,
-  callback: FormInputType => mixed,
-) {
+  callback: PartialFormInputType => mixed,
+): FormInputType {
   function handleFileUpload(file) {
     if (file.type === 'image') {
       const img = p.loadImage(file.data)
@@ -56,7 +75,7 @@ export function createForm(
       const slider = p.createSlider(
         MIN_PERCENT,
         MAX_PERCENT,
-        defaultValues[fieldName] || DEFAULT_PERCENT,
+        DEFAULT_VALUES[fieldName],
       )
       attachValueCallback(slider, fieldName, true)
       return slider
@@ -78,7 +97,7 @@ export function createForm(
   }
 
   function createStartButton() {
-    let running = defaultValues.running || false
+    let running = DEFAULT_VALUES.running || false
     const button = p.createButton(running ? STOP_TEXT : START_TEXT)
     button.mousePressed(() => {
       running = !running
@@ -101,4 +120,6 @@ export function createForm(
   p.createElement('br')
   createStartButton()
   p.createElement('br')
+
+  return DEFAULT_VALUES
 }

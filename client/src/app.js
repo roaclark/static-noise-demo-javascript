@@ -2,7 +2,7 @@
 import p5 from 'p5'
 import 'p5/lib/addons/p5.dom'
 
-import { createForm, type FormInputType, DEFAULT_PERCENT } from './form'
+import { createForm, type FormInputType } from './form'
 import { updateNoise, updateOffset, type PointType } from './points'
 import './styles.css'
 
@@ -10,19 +10,20 @@ const WIDTH = 700
 const HEIGHT = 500
 
 const sketch = p => {
-  let formData: FormInputType = {}
+  let formData: FormInputType
   let noiseParticles: PointType[] = []
   let offset: PointType = { x: 0, y: 0 }
   let target: PointType = { x: 0, y: 0 }
 
   p.setup = function() {
-    noiseParticles = updateNoise(noiseParticles, DEFAULT_PERCENT)
-    createForm(p, {}, newData => {
+    formData = createForm(p, newData => {
+      formData = Object.assign(formData, newData)
       if (newData.noiseDensity) {
-        noiseParticles = updateNoise(noiseParticles, newData.noiseDensity)
+        noiseParticles = updateNoise(noiseParticles, formData.noiseDensity)
       }
-      return Object.assign(formData, newData)
+      return formData
     })
+    noiseParticles = updateNoise(noiseParticles, formData.noiseDensity)
     p.createCanvas(WIDTH, HEIGHT)
   }
 
@@ -61,7 +62,7 @@ const sketch = p => {
       p.text(backgroundText, WIDTH / 2, HEIGHT / 2)
     }
 
-    const radius = noiseSize || DEFAULT_PERCENT
+    const radius = noiseSize
     p.fill(0)
     noiseParticles.forEach(point => {
       const x = (point.x * WIDTH + offset.x) % WIDTH
@@ -73,8 +74,8 @@ const sketch = p => {
       ;({ offset, target } = updateOffset(
         offset,
         target,
-        noiseSpeed || DEFAULT_PERCENT,
-        noiseJitter || DEFAULT_PERCENT,
+        noiseSpeed,
+        noiseJitter,
       ))
     }
   }
