@@ -29,7 +29,7 @@ const DEFAULT_SIZE = 3
 const START_TEXT = 'Start'
 const STOP_TEXT = 'Stop'
 
-const DEFAULT_VALUES: FormInputType = {
+export const DEFAULT_FORM_VALUES: FormInputType = {
   noiseDensity: DEFAULT_PERCENT,
   noiseSize: DEFAULT_SIZE,
   noiseSpeed: DEFAULT_PERCENT,
@@ -39,10 +39,7 @@ const DEFAULT_VALUES: FormInputType = {
   running: false,
 }
 
-export function createForm(
-  p: *,
-  callback: PartialFormInputType => mixed,
-): FormInputType {
+export function createForm(p: *, callback: PartialFormInputType => mixed) {
   function handleFileUpload(file) {
     if (file.type === 'image') {
       const img = p.loadImage(file.data)
@@ -83,7 +80,7 @@ export function createForm(
       const slider = p.createSlider(
         minValue || MIN_PERCENT,
         maxValue || MAX_PERCENT,
-        DEFAULT_VALUES[fieldName],
+        DEFAULT_FORM_VALUES[fieldName],
       )
       attachValueCallback(slider, fieldName, true)
       return slider
@@ -105,7 +102,7 @@ export function createForm(
   }
 
   function createStartButton() {
-    let running = DEFAULT_VALUES.running || false
+    let running = DEFAULT_FORM_VALUES.running || false
     const button = p.createButton(running ? STOP_TEXT : START_TEXT)
     button.mousePressed(() => {
       running = !running
@@ -128,6 +125,4 @@ export function createForm(
   p.createElement('br')
   createStartButton()
   p.createElement('br')
-
-  return DEFAULT_VALUES
 }
