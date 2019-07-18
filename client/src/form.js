@@ -10,9 +10,9 @@ export type FormInputType = {
   running?: boolean,
 }
 
+export const DEFAULT_PERCENT = 25
 const MIN_PERCENT = 0
 const MAX_PERCENT = 100
-const DEFAULT_PERCENT = 25
 const START_TEXT = 'Start'
 const STOP_TEXT = 'Stop'
 
