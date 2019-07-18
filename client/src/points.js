@@ -21,5 +21,5 @@ export function updateOffset(
   noiseSpeed: number,
   noiseJitter: number,
 ) {
-  return offset
+  return { offset, target }
 }

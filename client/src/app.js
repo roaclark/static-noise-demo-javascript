@@ -70,12 +70,12 @@ const sketch = p => {
     })
 
     if (running) {
-      offset = updateOffset(
+      ;({ offset, target } = updateOffset(
         offset,
         target,
         noiseSpeed || DEFAULT_PERCENT,
         noiseJitter || DEFAULT_PERCENT,
-      )
+      ))
     }
   }
 }
