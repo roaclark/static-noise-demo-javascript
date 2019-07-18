@@ -30,11 +30,12 @@ export function createForm(
     }
   }
 
-  function attachValueCallback(slider, fieldName) {
+  function attachValueCallback(slider, fieldName, isNumber) {
     let sliderVal = slider.value
 
     function updateValue(e) {
-      const newVal = e.target.value
+      const rawVal = e.target.value
+      const newVal = isNumber ? parseInt(rawVal, 10) : rawVal
       if (newVal !== sliderVal) callback({ [fieldName]: newVal })
       sliderVal = newVal
     }
@@ -57,7 +58,7 @@ export function createForm(
         MAX_PERCENT,
         defaultValues[fieldName] || DEFAULT_PERCENT,
       )
-      attachValueCallback(slider, fieldName)
+      attachValueCallback(slider, fieldName, true)
       return slider
     })
   }

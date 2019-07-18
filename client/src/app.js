@@ -3,7 +3,7 @@ import p5 from 'p5'
 import 'p5/lib/addons/p5.dom'
 
 import { createForm, type FormInputType, DEFAULT_PERCENT } from './form'
-import { updateNoise, type PointsType } from './points'
+import { updateNoise, updateOffset, type PointType } from './points'
 import './styles.css'
 
 const WIDTH = 700
@@ -11,7 +11,9 @@ const HEIGHT = 500
 
 const sketch = p => {
   let formData: FormInputType = {}
-  let noiseParticles: PointsType = []
+  let noiseParticles: PointType[] = []
+  let offset: PointType = { x: 0, y: 0 }
+  let target: PointType = { x: 0, y: 0 }
 
   p.setup = function() {
     noiseParticles = updateNoise(noiseParticles, DEFAULT_PERCENT)
@@ -27,7 +29,14 @@ const sketch = p => {
   p.draw = function() {
     p.background(255)
 
-    const { backgroundImage, backgroundText, noiseSize } = formData
+    const {
+      noiseSize,
+      noiseSpeed,
+      noiseJitter,
+      backgroundImage,
+      backgroundText,
+      running,
+    } = formData
 
     if (backgroundImage) {
       const ratio = Math.max(
@@ -52,11 +61,22 @@ const sketch = p => {
       p.text(backgroundText, WIDTH / 2, HEIGHT / 2)
     }
 
-    const radius = parseInt(noiseSize, 10) || DEFAULT_PERCENT
+    const radius = noiseSize || DEFAULT_PERCENT
     p.fill(0)
     noiseParticles.forEach(point => {
-      p.circle(point.x * WIDTH, point.y * HEIGHT, radius)
+      const x = (point.x * WIDTH + offset.x) % WIDTH
+      const y = (point.y * HEIGHT + offset.y) % HEIGHT
+      p.circle(x, y, radius)
     })
+
+    if (running) {
+      offset = updateOffset(
+        offset,
+        target,
+        noiseSpeed || DEFAULT_PERCENT,
+        noiseJitter || DEFAULT_PERCENT,
+      )
+    }
   }
 }
 
