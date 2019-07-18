@@ -12,8 +12,9 @@ export type FormInputType = {
 
 const MIN_PERCENT = 0
 const MAX_PERCENT = 100
-
 const DEFAULT_PERCENT = 25
+const START_TEXT = 'Start'
+const STOP_TEXT = 'Stop'
 
 export function createForm(
   p: *,
@@ -77,10 +78,10 @@ export function createForm(
 
   function createStartButton() {
     let running = defaultValues.running || false
-    const button = p.createButton(running ? 'Stop' : 'Start')
+    const button = p.createButton(running ? STOP_TEXT : START_TEXT)
     button.mousePressed(() => {
       running = !running
-      button.html(running ? 'Stop' : 'Start')
+      button.html(running ? STOP_TEXT : START_TEXT)
       callback({ running })
     })
   }
