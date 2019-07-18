@@ -2,108 +2,14 @@
 import p5 from 'p5'
 import 'p5/lib/addons/p5.dom'
 
-import { createForm, DEFAULT_FORM_VALUES, FORM_FIELDS } from './form'
-import { updateNoise, updateOffset, type PointType } from './points'
+import { createForm, FORM_FIELDS } from './form'
+import ParticleManager from './ParticleManager'
 import './styles.css'
 
 const WIDTH = 600
 const HEIGHT = 400
 
 const UPDATE_RATE_IN_MILLISECONDS = 30
-
-class ParticleManager {
-  noiseSize: number
-  noiseDensity: number
-  noiseSpeed: number
-  noiseJitter: number
-  running: boolean
-  noiseParticles: PointType[]
-  offset: PointType
-  target: PointType
-  noiseImage: string
-
-  constructor() {
-    this.offset = { x: 0, y: 0 }
-    this.target = { x: 0, y: 0 }
-
-    const {
-      noiseSize,
-      noiseDensity,
-      noiseSpeed,
-      noiseJitter,
-      running,
-    } = DEFAULT_FORM_VALUES
-    this.noiseSize = noiseSize
-    this.noiseDensity = noiseDensity
-    this.noiseSpeed = noiseSpeed
-    this.noiseJitter = noiseJitter
-    this.running = running
-
-    this.updateNoise()
-  }
-
-  formUpdateCalback(field: string, value: *) {
-    this.noiseSize = field === FORM_FIELDS.NOISE_SIZE ? value : this.noiseSize
-    this.noiseDensity =
-      field === FORM_FIELDS.NOISE_DENSITY ? value : this.noiseDensity
-    this.noiseSpeed =
-      field === FORM_FIELDS.NOISE_SPEED ? value : this.noiseSpeed
-    this.noiseJitter =
-      field === FORM_FIELDS.NOISE_JITTER ? value : this.noiseJitter
-    this.running = field === FORM_FIELDS.RUNNING ? value : this.running
-
-    if (field === FORM_FIELDS.NOISE_DENSITY || FORM_FIELDS.NOISE_SIZE) {
-      this.updateNoise()
-    }
-  }
-
-  updateOffsetInterval() {
-    if (this.running) {
-      const { offset, target } = updateOffset(
-        this.offset,
-        this.target,
-        this.noiseSpeed,
-        this.noiseJitter,
-      )
-
-      this.offset = offset
-      this.target = target
-    }
-  }
-
-  updateNoise() {
-    const frameSize = WIDTH * HEIGHT
-    this.noiseParticles = updateNoise(
-      this.noiseParticles || [],
-      this.noiseDensity,
-      this.noiseSize,
-      frameSize,
-    )
-
-    this.createNoiseImage()
-  }
-
-  createNoiseImage() {
-    const canvas = document.createElement('canvas')
-
-    canvas.width = WIDTH
-    canvas.height = HEIGHT
-
-    const ctx = canvas.getContext('2d')
-
-    ctx.fillStyle = 'black'
-    this.noiseParticles.forEach(particle => {
-      const x = particle.x * WIDTH
-      const y = particle.y * HEIGHT
-
-      ctx.beginPath()
-      ctx.arc(x, y, this.noiseSize / 2, 0, 2 * Math.PI)
-      ctx.fill()
-    })
-
-    this.noiseImage = canvas.toDataURL()
-  }
-}
 
 const sketch = p => {
   function renderBackgroundImage() {
@@ -152,7 +58,7 @@ const sketch = p => {
   let backgroundText = null
   let noiseImage = null
 
-  const particleManager = new ParticleManager()
+  const particleManager = new ParticleManager(WIDTH, HEIGHT)
   setInterval(
     () => particleManager.updateOffsetInterval(),
     UPDATE_RATE_IN_MILLISECONDS,
