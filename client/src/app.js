@@ -27,7 +27,7 @@ const sketch = p => {
   p.draw = function() {
     p.background(255)
 
-    const { backgroundImage, backgroundText } = formData
+    const { backgroundImage, backgroundText, noiseSize } = formData
 
     if (backgroundImage) {
       const ratio = Math.max(
@@ -51,6 +51,12 @@ const sketch = p => {
       p.textSize(50)
       p.text(backgroundText, WIDTH / 2, HEIGHT / 2)
     }
+
+    const radius = parseInt(noiseSize, 10) || DEFAULT_PERCENT
+    p.fill(0)
+    noiseParticles.forEach(point => {
+      p.circle(point.x * WIDTH, point.y * HEIGHT, radius)
+    })
   }
 }
 
