@@ -8,7 +8,7 @@ export function updateNoise(
   density: number,
   size: number,
 ): PointType[] {
-  const targetPointCount = (POINTS_PER_DENSITY_PERCENT * density) / size ** 2
+  const targetPointCount = (POINTS_PER_DENSITY_PERCENT * density) / size
   const resultNoise = noise.slice(0, targetPointCount)
   while (resultNoise.length < targetPointCount) {
     resultNoise.push({

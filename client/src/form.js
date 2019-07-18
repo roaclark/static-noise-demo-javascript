@@ -23,12 +23,15 @@ export type FormInputType = {
 const DEFAULT_PERCENT = 25
 const MIN_PERCENT = 1
 const MAX_PERCENT = 100
+const MIN_SIZE = 1
+const MAX_SIZE = 10
+const DEFAULT_SIZE = 3
 const START_TEXT = 'Start'
 const STOP_TEXT = 'Stop'
 
 const DEFAULT_VALUES: FormInputType = {
   noiseDensity: DEFAULT_PERCENT,
-  noiseSize: DEFAULT_PERCENT,
+  noiseSize: DEFAULT_SIZE,
   noiseSpeed: DEFAULT_PERCENT,
   noiseJitter: DEFAULT_PERCENT,
   backgroundImage: null,
@@ -70,11 +73,16 @@ export function createForm(
     labelElement.attribute('for', fieldName)
   }
 
-  function createSlider(fieldName: string, label: string) {
+  function createSlider(
+    fieldName: string,
+    label: string,
+    minValue?: number,
+    maxValue?: number,
+  ) {
     withLabel(fieldName, label, () => {
       const slider = p.createSlider(
-        MIN_PERCENT,
-        MAX_PERCENT,
+        minValue || MIN_PERCENT,
+        maxValue || MAX_PERCENT,
         DEFAULT_VALUES[fieldName],
       )
       attachValueCallback(slider, fieldName, true)
@@ -110,7 +118,7 @@ export function createForm(
   p.createElement('br')
   createSlider('noiseSpeed', 'Noise Speed')
   p.createElement('br')
-  createSlider('noiseSize', 'Noise Size')
+  createSlider('noiseSize', 'Noise Size', MIN_SIZE, MAX_SIZE)
   p.createElement('br')
   createSlider('noiseJitter', 'Noise Jitter')
   p.createElement('br')
