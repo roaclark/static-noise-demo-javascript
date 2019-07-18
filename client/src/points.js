@@ -1,14 +1,16 @@
 //@flow
-const POINTS_PER_DENSITY_PERCENT = 1250
+const DENSITY_FACTOR = 0.004
 
 export type PointType = { x: number, y: number }
 
 export function updateNoise(
   noise: PointType[],
-  density: number,
-  size: number,
+  noiseDensity: number,
+  noiseSize: number,
+  frameSize: number,
 ): PointType[] {
-  const targetPointCount = (POINTS_PER_DENSITY_PERCENT * density) / size
+  const noiseFactor = DENSITY_FACTOR * frameSize
+  const targetPointCount = (noiseFactor * noiseDensity) / noiseSize
   const resultNoise = noise.slice(0, targetPointCount)
   while (resultNoise.length < targetPointCount) {
     resultNoise.push({
@@ -25,5 +27,6 @@ export function updateOffset(
   noiseSpeed: number,
   noiseJitter: number,
 ) {
-  return { offset, target }
+  const newOffset = { x: offset.x + 1, y: offset.y + 1 }
+  return { offset: newOffset, target }
 }
