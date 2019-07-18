@@ -18,12 +18,20 @@ const sketch = p => {
   p.setup = function() {
     formData = createForm(p, newData => {
       formData = Object.assign(formData, newData)
-      if (newData.noiseDensity) {
-        noiseParticles = updateNoise(noiseParticles, formData.noiseDensity)
+      if (newData.noiseDensity || newData.noiseSize) {
+        noiseParticles = updateNoise(
+          noiseParticles,
+          formData.noiseDensity,
+          formData.noiseSize,
+        )
       }
       return formData
     })
-    noiseParticles = updateNoise(noiseParticles, formData.noiseDensity)
+    noiseParticles = updateNoise(
+      noiseParticles,
+      formData.noiseDensity,
+      formData.noiseSize,
+    )
     p.createCanvas(WIDTH, HEIGHT)
   }
 
@@ -62,12 +70,11 @@ const sketch = p => {
       p.text(backgroundText, WIDTH / 2, HEIGHT / 2)
     }
 
-    const radius = noiseSize
     p.fill(0)
     noiseParticles.forEach(point => {
       const x = (point.x * WIDTH + offset.x) % WIDTH
       const y = (point.y * HEIGHT + offset.y) % HEIGHT
-      p.circle(x, y, radius)
+      p.circle(x, y, noiseSize)
     })
 
     if (running) {
