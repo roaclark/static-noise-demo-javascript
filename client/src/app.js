@@ -69,6 +69,56 @@ const sketch = p => {
     UPDATE_RATE_IN_MILLISECONDS,
   )
 
+  function renderBackgroundImage() {
+    const { backgroundImage } = particleManager.formData
+
+    if (!backgroundImage) {
+      return
+    }
+
+    const ratio = Math.max(
+      backgroundImage.width / WIDTH,
+      backgroundImage.height / HEIGHT,
+      1,
+    )
+    const renderWidth = backgroundImage.width / ratio
+    const renderHeight = backgroundImage.height / ratio
+    p.image(
+      backgroundImage,
+      (WIDTH - renderWidth) / 2,
+      (HEIGHT - renderHeight) / 2,
+      renderWidth,
+      renderHeight,
+    )
+  }
+
+  function renderBackgroundText() {
+    const { backgroundText } = particleManager.formData
+
+    if (!backgroundText) {
+      return
+    }
+
+    p.textAlign(p.CENTER, p.CENTER)
+    p.textSize(50)
+    p.text(backgroundText, WIDTH / 2, HEIGHT / 2)
+  }
+
+  function renderNoise() {
+    const {
+      noiseParticles,
+      offset,
+      formData: { noiseSize },
+    } = particleManager
+
+    p.fill(0)
+    noiseParticles.forEach(point => {
+      const x = (point.x * WIDTH + offset.x) % WIDTH
+      const y = (point.y * HEIGHT + offset.y) % HEIGHT
+      p.circle(x, y, noiseSize)
+    })
+  }
+
   p.setup = function() {
     createForm(p, newData => particleManager.formUpdateCalback(newData))
     p.createCanvas(WIDTH, HEIGHT)
@@ -77,41 +127,9 @@ const sketch = p => {
   p.draw = function() {
     p.background(255)
 
-    const {
-      noiseSize,
-      backgroundImage,
-      backgroundText,
-    } = particleManager.formData
-
-    if (backgroundImage) {
-      const ratio = Math.max(
-        backgroundImage.width / WIDTH,
-        backgroundImage.height / HEIGHT,
-        1,
-      )
-      const renderWidth = backgroundImage.width / ratio
-      const renderHeight = backgroundImage.height / ratio
-      p.image(
-        backgroundImage,
-        (WIDTH - renderWidth) / 2,
-        (HEIGHT - renderHeight) / 2,
-        renderWidth,
-        renderHeight,
-      )
-    }
-
-    if (backgroundText) {
-      p.textAlign(p.CENTER, p.CENTER)
-      p.textSize(50)
-      p.text(backgroundText, WIDTH / 2, HEIGHT / 2)
-    }
-
-    p.fill(0)
-    particleManager.noiseParticles.forEach(point => {
-      const x = (point.x * WIDTH + particleManager.offset.x) % WIDTH
-      const y = (point.y * HEIGHT + particleManager.offset.y) % HEIGHT
-      p.circle(x, y, noiseSize)
-    })
+    renderBackgroundImage()
+    renderBackgroundText()
+    renderNoise()
   }
 }
 
