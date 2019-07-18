@@ -20,6 +20,7 @@ class ParticleManager {
   noiseParticles: PointType[]
   offset: PointType
   target: PointType
+  noiseImage: string
 
   constructor() {
     this.offset = { x: 0, y: 0 }
@@ -38,14 +39,7 @@ class ParticleManager {
     this.noiseJitter = noiseJitter
     this.running = running
 
-    const frameSize = WIDTH * HEIGHT
-
-    this.noiseParticles = updateNoise(
-      [],
-      this.noiseDensity,
-      this.noiseSize,
-      frameSize,
-    )
+    this.updateNoise()
   }
 
   formUpdateCalback(field: string, value: *) {
@@ -59,13 +53,7 @@ class ParticleManager {
     this.running = field === FORM_FIELDS.RUNNING ? value : this.running
 
     if (field === FORM_FIELDS.NOISE_DENSITY || FORM_FIELDS.NOISE_SIZE) {
-      const frameSize = WIDTH * HEIGHT
-      this.noiseParticles = updateNoise(
-        this.noiseParticles,
-        this.noiseDensity,
-        this.noiseSize,
-        frameSize,
-      )
+      this.updateNoise()
     }
   }
 
@@ -82,18 +70,42 @@ class ParticleManager {
       this.target = target
     }
   }
+
+  updateNoise() {
+    const frameSize = WIDTH * HEIGHT
+    this.noiseParticles = updateNoise(
+      this.noiseParticles || [],
+      this.noiseDensity,
+      this.noiseSize,
+      frameSize,
+    )
+
+    this.createNoiseImage()
+  }
+
+  createNoiseImage() {
+    const canvas = document.createElement('canvas')
+
+    canvas.width = WIDTH
+    canvas.height = HEIGHT
+
+    const ctx = canvas.getContext('2d')
+
+    ctx.fillStyle = 'black'
+    this.noiseParticles.forEach(particle => {
+      const x = particle.x * WIDTH
+      const y = particle.y * HEIGHT
+
+      ctx.beginPath()
+      ctx.arc(x, y, this.noiseSize / 2, 0, 2 * Math.PI)
+      ctx.fill()
+    })
+
+    this.noiseImage = canvas.toDataURL()
+  }
 }
 
 const sketch = p => {
-  let backgroundImage = null
-  let backgroundText = null
-
-  const particleManager = new ParticleManager()
-  setInterval(
-    () => particleManager.updateOffsetInterval(),
-    UPDATE_RATE_IN_MILLISECONDS,
-  )
-
   function renderBackgroundImage() {
     if (!backgroundImage) {
       return
@@ -126,15 +138,26 @@ const sketch = p => {
   }
 
   function renderNoise() {
-    const { noiseParticles, offset, noiseSize } = particleManager
+    const { offset } = particleManager
+    noiseImage && p.image(noiseImage, offset.x, offset.y)
+  }
 
-    p.fill(0)
-    noiseParticles.forEach(point => {
-      const x = (point.x * WIDTH + offset.x) % WIDTH
-      const y = (point.y * HEIGHT + offset.y) % HEIGHT
-      p.circle(x, y, noiseSize)
+  function reloadNoiseImage() {
+    p.loadImage(particleManager.noiseImage, img => {
+      noiseImage = img
     })
   }
+
+  let backgroundImage = null
+  let backgroundText = null
+  let noiseImage = null
+
+  const particleManager = new ParticleManager()
+  setInterval(
+    () => particleManager.updateOffsetInterval(),
+    UPDATE_RATE_IN_MILLISECONDS,
+  )
+  reloadNoiseImage()
 
   p.setup = function() {
     createForm(p, (field, value) => {
@@ -143,6 +166,7 @@ const sketch = p => {
       backgroundText =
         field === FORM_FIELDS.BACKGROUND_IMAGE ? value : backgroundText
       particleManager.formUpdateCalback(field, value)
+      reloadNoiseImage()
     })
     p.createCanvas(WIDTH, HEIGHT)
   }
