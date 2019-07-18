@@ -11,7 +11,7 @@ const HEIGHT = 500
 
 const sketch = p => {
   let formData: FormInputType = {}
-  let noiseParticles: PointsType = new Set()
+  let noiseParticles: PointsType = []
 
   p.setup = function() {
     noiseParticles = updateNoise(noiseParticles, DEFAULT_PERCENT)
