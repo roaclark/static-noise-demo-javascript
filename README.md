@@ -1,4 +1,3 @@
 # StaticNoiseDemoJavascript
-TODO: Add a project description
 
-[This project was auto-generated.](https://github.com/roaclark/project-bootstrap)
+A demonstration of how moving noise makes it easier for humans to perceive data than stationary noise.
