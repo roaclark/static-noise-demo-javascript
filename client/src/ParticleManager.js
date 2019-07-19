@@ -5,6 +5,32 @@ type PointType = { x: number, y: number }
 
 const DENSITY_FACTOR = 0.004
 
+function moveToTarget(current, target, speed) {
+  const xDiff = target.x - current.x
+  const yDiff = target.y - current.y
+
+  if (xDiff || yDiff) {
+    const distanceRatio = Math.sqrt(speed ** 2 / (xDiff ** 2 + yDiff ** 2))
+    return {
+      x: current.x + distanceRatio * xDiff,
+      y: current.y + distanceRatio * yDiff,
+    }
+  }
+
+  return current
+}
+
+function withinDistance(current, target, distance) {
+  const xDiff = target.x - current.x
+  const yDiff = target.y - current.y
+
+  return xDiff ** 2 + yDiff ** 2 < distance ** 2
+}
+
+function getNewTarget(current, center, distance) {
+  return { x: Math.random() * center.x * 2, y: Math.random() * center.y * 2 }
+}
+
 export default class ParticleManager {
   width: number
   height: number
@@ -58,17 +84,10 @@ export default class ParticleManager {
 
   updateOffsetInterval() {
     if (this.running) {
-      const xDiff = this.target.x - this.offset.x
-      const yDiff = this.target.y - this.offset.y
-
-      if (xDiff || yDiff) {
-        const distanceRatio = Math.sqrt(
-          this.noiseSpeed ** 2 / (xDiff ** 2 + yDiff ** 2),
-        )
-        this.offset = {
-          x: this.offset.x + distanceRatio * xDiff,
-          y: this.offset.y + distanceRatio * yDiff,
-        }
+      this.offset = moveToTarget(this.offset, this.target, this.noiseSpeed)
+      if (withinDistance(this.offset, this.target, this.noiseSpeed)) {
+        const center = { x: this.width / 2, y: this.height / 2 }
+        this.target = getNewTarget(this.offset, center, this.noiseJitter)
       }
     }
   }
