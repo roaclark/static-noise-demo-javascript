@@ -10,8 +10,7 @@
     "build:server": "babel ./server/src --out-dir ./server/dist --delete-dir-on-start",
     "start:server": "nodemon --exec babel-node server/src/app.js",
     "start": "node server/dist/app.js",
-    "build": "yarn build:client && yarn build:server",
-    "postinstall": "yarn build"
+    "build": "yarn build:client && yarn build:server"
   },
   "keywords": [],
   "author": "",
