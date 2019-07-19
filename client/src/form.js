@@ -16,6 +16,9 @@ const MAX_PERCENT = 100
 const MIN_SIZE = 1
 const MAX_SIZE = 10
 const DEFAULT_SIZE = 3
+const MIN_JITTER = 1
+const MAX_JITTER = 130
+const DEFAULT_JITTER = 50
 const START_TEXT = 'Start'
 const STOP_TEXT = 'Stop'
 
@@ -23,7 +26,7 @@ export const DEFAULT_FORM_VALUES = {
   noiseDensity: DEFAULT_PERCENT,
   noiseSize: DEFAULT_SIZE,
   noiseSpeed: DEFAULT_PERCENT,
-  noiseJitter: DEFAULT_PERCENT,
+  noiseJitter: DEFAULT_JITTER,
   backgroundImage: null,
   backgroundText: null,
   running: false,
@@ -107,7 +110,7 @@ export function createForm(p: *, callback: (string, *) => mixed) {
   p.createElement('br')
   createSlider(FORM_FIELDS.NOISE_SIZE, 'Noise Size', MIN_SIZE, MAX_SIZE)
   p.createElement('br')
-  createSlider(FORM_FIELDS.NOISE_JITTER, 'Noise Jitter')
+  createSlider(FORM_FIELDS.NOISE_JITTER, 'Noise Jitter', MIN_JITTER, MAX_JITTER)
   p.createElement('br')
   createTextInput(FORM_FIELDS.BACKGROUND_TEXT, 'Background text')
   p.createElement('br')

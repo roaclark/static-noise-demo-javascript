@@ -4,6 +4,7 @@ import { DEFAULT_FORM_VALUES, FORM_FIELDS } from './form'
 type PointType = { x: number, y: number }
 
 const DENSITY_FACTOR = 0.004
+const MAX_JITTER_DISTANCE = 150
 
 function moveToTarget(current, target, speed) {
   const xDiff = target.x - current.x
@@ -28,7 +29,8 @@ function withinDistance(current, target, distance) {
 }
 
 function getNewTarget(current, center, distance) {
-  return { x: Math.random() * center.x * 2, y: Math.random() * center.y * 2 }
+  const angle = Math.random() * Math.PI * 2
+  return { x: distance * Math.cos(angle), y: distance * Math.sin(angle) }
 }
 
 export default class ParticleManager {
@@ -87,7 +89,11 @@ export default class ParticleManager {
       this.offset = moveToTarget(this.offset, this.target, this.noiseSpeed)
       if (withinDistance(this.offset, this.target, this.noiseSpeed)) {
         const center = { x: this.width / 2, y: this.height / 2 }
-        this.target = getNewTarget(this.offset, center, this.noiseJitter)
+        this.target = getNewTarget(
+          this.offset,
+          center,
+          MAX_JITTER_DISTANCE - this.noiseJitter,
+        )
       }
     }
   }
